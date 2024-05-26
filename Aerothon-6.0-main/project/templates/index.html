@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Assessment Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #riskLevel {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Risk Assessment Dashboard</h1>
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" placeholder="Enter latitude">
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" placeholder="Enter longitude">
+        <button onclick="getRiskAssessment()">Get Risk Assessment</button>
+        <div id="riskLevel"></div>
+        <table id="weatherTable">
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function getRiskAssessment() {
+            var latitude = document.getElementById('latitude').value;
+            var longitude = document.getElementById('longitude').value;
+
+            fetch('/risk_assessment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('riskLevel').innerText = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('riskLevel').innerText = 'Risk Level: ' + data.risk_level;
+                    displayWeatherData(data.weather_data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displayWeatherData(weatherData) {
+            const table = document.getElementById('weatherTable');
+            table.innerHTML = ''; // Clear existing rows
+
+            for (const [param, value] of Object.entries(weatherData)) {
+                const row = table.insertRow();
+                const paramCell = row.insertCell(0);
+                const valueCell = row.insertCell(1);
+                paramCell.innerText = param.replace(/_/g, ' '); // Replace underscores with spaces
+                valueCell.innerText = value;
+            }
+        }
+    </script>
+</body>
+</html>

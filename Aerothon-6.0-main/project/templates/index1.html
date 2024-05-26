@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route and Weather Information</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="name-bar">Route and Weather Information</div>
+        <h1>Enter Route Information</h1>
+        <form method="post">
+            <label for="departure">Departure Airport Code:</label>
+            <input type="text" id="departure" name="departure" required><br><br>
+            <label for="arrival">Arrival Airport Code:</label>
+            <input type="text" id="arrival" name="arrival" required><br><br>
+            <label for="waypoints">Waypoints (latitude,longitude), one per line:</label><br>
+            <textarea id="waypoints" name="waypoints" rows="4" cols="50" required></textarea><br><br>
+            <button type="submit">Submit</button>
+        </form>
+
+        {% if route_info %}
+            <h1>Route Information</h1>
+            <ul>
+                {% for route_data in route_info %}
+                    <li>
+                        <strong>Route:</strong> 
+                        <ul>
+                            {% for coord in route_data.route %}
+                                <li>{{ coord[0] }}, {{ coord[1] }}</li>
+                            {% endfor %}
+                        </ul>
+                        <strong>Distance:</strong> {{ route_data.distance }} km
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if weather_info_start or weather_info_end %}
+            <h1>Weather Information</h1>
+        {% endif %}
+
+        {% if weather_info_start %}
+            <h2>Start Point Weather</h2>
+            <ul>
+                {% for key, value in weather_info_start.items() %}
+                    <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if weather_info_end %}
+            <h2>End Point Weather</h2>
+            <ul>
+                {% for key, value in weather_info_end.items() %}
+                    <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

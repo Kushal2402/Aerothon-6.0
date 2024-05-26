@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            font-size: 24px;
+        }
+
+        h1 i {
+            color: #4a90e2;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #357ab8;
+        }
+
+        #routes p {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-plane"></i> Route Finder</h1>
+        <form id="routeForm">
+            <div class="form-group">
+                <label for="start">Start Airport (IATA):</label>
+                <input type="text" id="start" name="start" required>
+            </div>
+            <div class="form-group">
+                <label for="end">End Airport (IATA):</label>
+                <input type="text" id="end" name="end" required>
+            </div>
+            <div id="waypoints" class="form-group">
+                <label for="waypoint">Waypoint (latitude longitude):</label>
+                <input type="text" class="waypoint" name="waypoint">
+            </div>
+            <button type="button" onclick="addWaypoint()">Add Waypoint</button><br>
+            <br><button type="submit">Calculate Routes</button>
+        </form>
+
+        <h2>Possible Routes:</h2>
+        <div id="routes"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        document.getElementById('routeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+            const waypointInputs = document.querySelectorAll('.waypoint');
+            const waypoints = Array.from(waypointInputs).map(input => {
+                const [lat, lon] = input.value.split(' ');
+                return { lat: lat.trim(), lon: lon.trim() };
+            });
+
+            fetch('/calculate_routes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ start, end, waypoints }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const routesDiv = document.getElementById('routes');
+                routesDiv.innerHTML = '';
+                data.forEach(routeInfo => {
+                    const route = routeInfo.route.map(coord => `(${coord[0]}, ${coord[1]})`).join(' -> ');
+                    const distance = routeInfo.distance.toFixed(2);
+                    routesDiv.innerHTML += `<p>Route: ${route} <br> Total Distance: ${distance} km</p>`;
+                });
+            });
+        });
+
+        function addWaypoint() {
+            const waypointsDiv = document.getElementById('waypoints');
+            const newWaypoint = document.createElement('input');
+            newWaypoint.type = 'text';
+            newWaypoint.className = 'waypoint';
+            newWaypoint.name = 'waypoint';
+            waypointsDiv.appendChild(newWaypoint);
+            waypointsDiv.appendChild(document.createElement('br'));
+        }
+    </script>
+</body>
+</html>

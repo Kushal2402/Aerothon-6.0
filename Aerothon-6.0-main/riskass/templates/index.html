@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Assessment Dashboard</title>
+    <link rel="x-icon" type="image/x-icon" href='https://cdn-icons-png.flaticon.com/512/2176/2176912.png'>
+    <link rel="stylesheet" href="../static/aerothon.css">
+</head>
+<body>
+    
+    <div class="container" >
+        <div id="heading" >
+            <h1>Risk Assessment Dashboard</h1>
+        </div>
+        <div id = "lati_box">
+                <label for="latitude">Latitude:</label>
+                <input type="text" id="latitude" placeholder="Enter latitude">
+        </div>
+        <div id="longi_box">
+            <label for="longitude">Longitude:</label>
+            <input type="text" id="longitude" placeholder="Enter longitude">
+        </div>
+        <button id="btn">Get Risk Assessment</button>
+        <div id="riskLevel"></div>
+        <div id="tab">
+            <table id="weatherTable" border="3">
+                <caption>Live Data Report</caption>
+                <thead>
+                    <th id="table_content_col1">Parameter</th>
+                    <th id = "table_content_col2">Value</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            
+            </table>
+        </div>
+    </div>
+
+    <script src="../static/aerothon.js"></script>
+</body>
+</html>
